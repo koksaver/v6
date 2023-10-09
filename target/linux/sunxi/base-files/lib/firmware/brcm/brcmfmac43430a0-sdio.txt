@@ -1,1 +1,0 @@
-/home/wwz09/Desktop/github/IPQ360V6/target/linux/sunxi/base-files/lib/firmware/brcm/brcmfmac43430a0-sdio.txt
