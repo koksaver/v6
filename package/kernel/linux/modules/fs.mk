@@ -596,4 +596,13 @@ define KernelPackage/fuse/description
  Kernel module for userspace filesystem support
 endef
 
+define KernelPackage/fs-ntfs3
+  SUBMENU:=$(FS_MENU)
+  TITLE:=Ntfs3 support
+  KCONFIG:= CONFIG_NTFS3_FS CONFIG_NTFS3_FS_POSIX_ACL=y
+  FILES:=$(LINUX_DIR)/fs/ntfs3/ntfs3.ko
+  $(call AddDepends/nls)
+  AUTOLOAD:=$(call AutoLoad,80,ntfs3)
+endef
+
 $(eval $(call KernelPackage,fuse))
