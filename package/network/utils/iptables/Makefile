@@ -9,12 +9,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=iptables
-PKG_VERSION:=1.8.3
-PKG_RELEASE:=1
+PKG_VERSION:=1.8.7
+PKG_RELEASE:=2
 
 PKG_SOURCE_URL:=https://netfilter.org/projects/iptables/files
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_HASH:=a23cac034181206b4545f4e7e730e76e08b5f3dd78771ba9645a6756de9cdd80
+PKG_HASH:=c109c96bb04998cd44156622d36f8e04b140701ec60531a10668cfdff5e8d8f0
 
 PKG_FIXUP:=autoreconf
 PKG_FLAGS:=nonshared
@@ -28,7 +28,7 @@ include $(INCLUDE_DIR)/package.mk
 ifeq ($(DUMP),)
   -include $(LINUX_DIR)/.config
   include $(INCLUDE_DIR)/netfilter.mk
-  STAMP_CONFIGURED:=$(strip $(STAMP_CONFIGURED))_$(shell grep 'NETFILTER' $(LINUX_DIR)/.config | mkhash md5)
+  STAMP_CONFIGURED:=$(strip $(STAMP_CONFIGURED))_$(shell grep 'NETFILTER' $(LINUX_DIR)/.config | $(MKHASH) md5)
 endif
 
 
@@ -169,19 +169,6 @@ Includes support for:
 
 endef
 
-define Package/iptables-mod-imq
-$(call Package/iptables/Module, +kmod-ipt-imq)
-  TITLE:=IMQ support
-endef
-
-define Package/iptables-mod-imq/description
-iptables extension for IMQ support.
-
- Targets:
-  - IMQ
-
-endef
-
 define Package/iptables-mod-ipopt
 $(call Package/iptables/Module, +kmod-ipt-ipopt)
   TITLE:=IP/Packet option extensions
@@ -233,19 +220,6 @@ iptables extensions for extra NAT targets.
  Targets:
   - MIRROR
   - NETMAP
-endef
-
-define Package/iptables-mod-ulog
-$(call Package/iptables/Module, +kmod-ipt-ulog)
-  TITLE:=user-space packet logging
-endef
-
-define Package/iptables-mod-ulog/description
-iptables extensions for user-space packet logging.
-
- Targets:
-  - ULOG
-
 endef
 
 define Package/iptables-mod-nflog
@@ -510,15 +484,6 @@ define Package/ip6tables-mod-nat/description
 iptables extensions for IPv6-NAT targets.
 endef
 
-define Package/libiptc
-$(call Package/iptables/Default)
-  SECTION:=libs
-  CATEGORY:=Libraries
-  DEPENDS:=+libip4tc +libip6tc +libxtables
-  ABI_VERSION:=0
-  TITLE:=IPv4/IPv6 firewall - shared libiptc library (nf compatibility stub)
-endef
-
 define Package/libip4tc
 $(call Package/iptables/Default)
   SECTION:=libs
@@ -652,11 +617,6 @@ define Package/ip6tables-nft/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/ip6tables{,-restore}-translate $(1)/usr/sbin/
 endef
 
-define Package/libiptc/install
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libiptc.so.* $(1)/usr/lib/
-endef
-
 define Package/libip4tc/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libip4tc.so.* $(1)/usr/lib/
@@ -694,6 +654,10 @@ define BuildPlugin
   $$(eval $$(call BuildPackage,$(1)))
 endef
 
+$(eval $(call BuildPackage,libxtables))
+$(eval $(call BuildPackage,libxtables-nft))
+$(eval $(call BuildPackage,libip4tc))
+$(eval $(call BuildPackage,libip6tc))
 $(eval $(call BuildPackage,iptables))
 $(eval $(call BuildPackage,iptables-nft))
 $(eval $(call BuildPlugin,iptables-mod-conntrack-extra,$(IPT_CONNTRACK_EXTRA-m)))
@@ -701,14 +665,12 @@ $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m))
 $(eval $(call BuildPlugin,iptables-mod-extra,$(IPT_EXTRA-m)))
 $(eval $(call BuildPlugin,iptables-mod-physdev,$(IPT_PHYSDEV-m)))
 $(eval $(call BuildPlugin,iptables-mod-filter,$(IPT_FILTER-m)))
-$(eval $(call BuildPlugin,iptables-mod-imq,$(IPT_IMQ-m)))
 $(eval $(call BuildPlugin,iptables-mod-ipopt,$(IPT_IPOPT-m)))
 $(eval $(call BuildPlugin,iptables-mod-ipsec,$(IPT_IPSEC-m)))
 $(eval $(call BuildPlugin,iptables-mod-nat-extra,$(IPT_NAT_EXTRA-m)))
 $(eval $(call BuildPlugin,iptables-mod-iprange,$(IPT_IPRANGE-m)))
 $(eval $(call BuildPlugin,iptables-mod-cluster,$(IPT_CLUSTER-m)))
 $(eval $(call BuildPlugin,iptables-mod-clusterip,$(IPT_CLUSTERIP-m)))
-$(eval $(call BuildPlugin,iptables-mod-ulog,$(IPT_ULOG-m)))
 $(eval $(call BuildPlugin,iptables-mod-hashlimit,$(IPT_HASHLIMIT-m)))
 $(eval $(call BuildPlugin,iptables-mod-rpfilter,$(IPT_RPFILTER-m)))
 $(eval $(call BuildPlugin,iptables-mod-led,$(IPT_LED-m)))
@@ -724,8 +686,4 @@ $(eval $(call BuildPackage,ip6tables))
 $(eval $(call BuildPackage,ip6tables-nft))
 $(eval $(call BuildPlugin,ip6tables-extra,$(IPT_IPV6_EXTRA-m)))
 $(eval $(call BuildPlugin,ip6tables-mod-nat,$(IPT_NAT6-m)))
-$(eval $(call BuildPackage,libiptc))
-$(eval $(call BuildPackage,libip4tc))
-$(eval $(call BuildPackage,libip6tc))
-$(eval $(call BuildPackage,libxtables))
-$(eval $(call BuildPackage,libxtables-nft))
+
