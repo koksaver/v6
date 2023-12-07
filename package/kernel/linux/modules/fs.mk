@@ -614,3 +614,4 @@ define KernelPackage/fuse/description
  Kernel module for userspace filesystem support
 endef
 
+$(eval $(call KernelPackage,fuse))
