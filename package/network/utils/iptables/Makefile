@@ -543,6 +543,33 @@ $(call Package/iptables/Default)
   DEPENDS:=+libxtables
 endef
 
+define Package/libiptext
+ $(call Package/iptables/Default)
+ SECTION:=libs
+ CATEGORY:=Libraries
+ TITLE:=IPv4 firewall - shared libiptext library
+ ABI_VERSION:=0
+ DEPENDS:=+libxtables
+endef
+
+define Package/libiptext6
+ $(call Package/iptables/Default)
+ SECTION:=libs
+ CATEGORY:=Libraries
+ TITLE:=IPv6 firewall - shared libiptext library
+ ABI_VERSION:=0
+ DEPENDS:=+libxtables
+endef
+
+define Package/libiptext-nft
+ $(call Package/iptables/Default)
+ SECTION:=libs
+ CATEGORY:=Libraries
+ TITLE:=IPv4/IPv6 firewall - shared libiptext nft library
+ ABI_VERSION:=0
+ DEPENDS:=+libxtables
+endef
+
 define Package/libxtables
  $(call Package/iptables/Default)
  SECTION:=libs
@@ -699,6 +726,9 @@ $(eval $(call BuildPackage,libxtables))
 $(eval $(call BuildPackage,libxtables-nft))
 $(eval $(call BuildPackage,libip4tc))
 $(eval $(call BuildPackage,libip6tc))
+$(eval $(call BuildPackage,libiptext))
+$(eval $(call BuildPackage,libiptext6))
+$(eval $(call BuildPackage,libiptext-nft))
 $(eval $(call BuildPackage,iptables))
 $(eval $(call BuildPackage,xtables-nft))
 $(eval $(call BuildPackage,arptables-nft))
