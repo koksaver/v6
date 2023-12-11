@@ -105,6 +105,34 @@ IP firewall administration tool.
 
 endef
 
+define Package/xtables-nft
+$(call Package/iptables/Default)
+  TITLE:=IP firewall administration tool nft
+  DEPENDS:=+libnftnl +libiptext +IPV6:libiptext6 +libiptext-nft +kmod-nft-compat
+endef
+
+define Package/arptables-nft
+$(call Package/iptables/Default)
+  DEPENDS:=+kmod-nft-arp +xtables-nft +kmod-arptables
+  TITLE:=ARP firewall administration tool nft
+  PROVIDES:=arptables
+  ALTERNATIVES:=\
+    300:/usr/sbin/arptables:/usr/sbin/xtables-nft-multi \
+    300:/usr/sbin/arptables-restore:/usr/sbin/xtables-nft-multi \
+    300:/usr/sbin/arptables-save:/usr/sbin/xtables-nft-multi
+endef
+
+define Package/ebtables-nft
+$(call Package/iptables/Default)
+  DEPENDS:=+kmod-nft-bridge +xtables-nft +kmod-ebtables
+  TITLE:=Bridge firewall administration tool nft
+  PROVIDES:=ebtables
+  ALTERNATIVES:=\
+    300:/usr/sbin/ebtables:/usr/sbin/xtables-nft-multi \
+    300:/usr/sbin/ebtables-restore:/usr/sbin/xtables-nft-multi \
+    300:/usr/sbin/ebtables-save:/usr/sbin/xtables-nft-multi
+endef
+
 define Package/iptables-nft
 $(call Package/iptables/Default)
   TITLE:=IP firewall administration tool nft
@@ -672,6 +700,9 @@ $(eval $(call BuildPackage,libxtables-nft))
 $(eval $(call BuildPackage,libip4tc))
 $(eval $(call BuildPackage,libip6tc))
 $(eval $(call BuildPackage,iptables))
+$(eval $(call BuildPackage,xtables-nft))
+$(eval $(call BuildPackage,arptables-nft))
+$(eval $(call BuildPackage,ebtables-nft))
 $(eval $(call BuildPackage,iptables-nft))
 $(eval $(call BuildPlugin,iptables-mod-conntrack-extra,$(IPT_CONNTRACK_EXTRA-m)))
 $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m)))
