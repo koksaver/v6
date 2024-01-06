@@ -498,6 +498,24 @@ endef
 
 $(eval $(call KernelPackage,fs-ntfs))
 
+define KernelPackage/fs-ntfs3
+  SUBMENU:=$(FS_MENU)
+  TITLE:=NTFS filesystem read & write (new driver) support
+  KCONFIG:= CONFIG_NTFS3_FS CONFIG_NTFS3_FS_POSIX_ACL=y
+  FILES:=$(LINUX_DIR)/fs/ntfs3/ntfs3.ko
+  $(call AddDepends/nls)
+  AUTOLOAD:=$(call AutoLoad,80,ntfs3)
+endef
+
+define KernelPackage/fs-ntfs3/description
+ Kernel module for fully functional NTFS filesystem support. It allows
+ reading as well as writing.
+
+ It supports NTFS versions up to 3.1.
+endef
+
+$(eval $(call KernelPackage,fs-ntfs3))
+
 
 define KernelPackage/fs-reiserfs
   SUBMENU:=$(FS_MENU)
